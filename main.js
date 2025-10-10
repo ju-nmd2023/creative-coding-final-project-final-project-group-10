@@ -2,7 +2,7 @@
 //particle variables and pinch threshold
 let particles = [];
 let rockets = [];
-const PINCH_THRESHOLD = 30;
+const PINCH_THRESHOLD = 15;
 
 //video variables
 let video;
