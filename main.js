@@ -2,7 +2,7 @@
 //particle variables and pinch threshold
 let particles = [];
 let rockets = [];
-const PINCH_THRESHOLD = 15;
+const PINCH_THRESHOLD = 20;
 
 //video variables
 let video;
@@ -21,6 +21,11 @@ const gridRows = 4;
 
 let position;
 
+// bee variables
+const beeSize = 20;
+const beeLayers = 10;
+
+
 //---------CLASSES--------
 //particle classes
 class Particle {
@@ -31,6 +36,7 @@ class Particle {
     this.velocity = createVector(cos(a) * v, sin(a) * v);
     this.lifespan = 80 + random(60);
     this.size = random(3, 6);
+    this.points = int(random(4, 7));
   }
   update() {
     this.lifespan--;
@@ -41,16 +47,37 @@ class Particle {
   draw() {
     push();
     translate(this.position.x, this.position.y);
+    rotate(frameCount * 0.02); // make them twinkle a bit
     noStroke();
-    fill(255, 240, 120, 180);
-    ellipse(0, 0, this.size);
+
+    // inner glow
     fill(255, 220, 80, 40);
-    ellipse(0, 0, this.size * 3.5);
+    drawStar(0, 0, this.size * 1.5, this.size * 3.5, this.points);
+
+    // main star
+    fill(255, 240, 120, 180);
+    drawStar(0, 0, this.size / 2, this.size, this.points);
+
     pop();
   }
   isDead() {
     return this.lifespan <= 0;
   }
+}
+
+function drawStar(x, y, radius1, radius2, npoints) {
+  let angle = TWO_PI / npoints;
+  let halfAngle = angle / 2.0;
+  beginShape();
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = x + cos(a) * radius2;
+    let sy = y + sin(a) * radius2;
+    vertex(sx, sy);
+    sx = x + cos(a + halfAngle) * radius1;
+    sy = y + sin(a + halfAngle) * radius1;
+    vertex(sx, sy);
+  }
+  endShape(CLOSE);
 }
 
 class Rocket {
@@ -84,7 +111,7 @@ class Rocket {
     endShape();
   }
   explode() {
-    for (let i = 0; i < 220; i++) {
+    for (let i = 0; i < 50; i++) {
       const p = new Particle(this.pos.x, this.pos.y);
       p.velocity.add(this.vel.copy().mult(0.2));
       particles.push(p);
@@ -108,7 +135,7 @@ function setup() {
   button.mousePressed(toggleDayNight);
 
   video = createCapture(VIDEO, videoLoaded);
-  video.size(1500, 1000);
+  video.size(1000, 800);
   video.hide();
 
   backgroundSquares();
@@ -126,7 +153,7 @@ function toggleDayNight() {
   squaresDrawn = false;
 }
 
-//squares
+//squares for bee and background
 function getRandomValue(pos, variance) {
   return pos + random(-variance, variance);
 }
@@ -198,6 +225,36 @@ function getHandsData(results) {
   predictions = results;
 }
 
+// bee function
+
+function drawBeeLayers (x,y,beeSize, beeLayers){
+  noFill();
+  const variance = beeSize / 20;
+
+  for (let i = 0; i < beeLayers; i++){
+      const s = (beeSize / beeLayers) * i;
+      const half = s / 2;
+
+      //alters the black and yellow, had to ask ChatGPT how to do it https://chatgpt.com/share/68dd8161-9938-8011-8082-56747b724f74
+      if (i % 2 === 0) {
+          stroke(0); 
+      } else {
+          stroke(255, 255, 0); 
+      }
+
+      beginShape();
+      for (let j = 0; j < 10; j++) {
+          let angle = random(TWO_PI); //randomising the angle https://chatgpt.com/share/68dd8297-3d60-8011-998d-f5c158d6b93b 
+          let radius = random(half - variance, half); 
+          let xOffset = cos(angle) * radius;
+          let yOffset = sin(angle) * radius;
+
+          vertex(x + xOffset, y + yOffset);
+      }
+      endShape(CLOSE);
+  }
+}
+
 function draw() {
   //image(video, 0, 0, 1500, 1000)
 
@@ -207,6 +264,13 @@ function draw() {
       background(164, 188, 197);
       stroke(174, 198, 207);
       backgroundSquares();
+      const numBees = 10; //draw 10 bees
+
+      for (let i = 0; i < numBees; i++) {
+          let x = random(0, width);
+          let y = random(0, height);
+  
+          drawBeeLayers(x, y, beeSize, beeLayers);
     }
   } else {
     // NIGHT MODE
@@ -246,6 +310,7 @@ function draw() {
       }
     }
 
+
     // Update and draw rockets
     for (let i = rockets.length - 1; i >= 0; i--) {
       rockets[i].update();
@@ -272,4 +337,5 @@ function draw() {
       }
     } */
   }
+}
 }
