@@ -42,7 +42,7 @@
                 const v = random(1.5, 4.5);
                 this.velocity = createVector(cos(a) * v, sin(a) * v);
                 this.lifespan = 80 + random(60);
-                this.size = random(3, 6);
+                this.size = random(5, 8);
                 this.points = int(random(4, 7));
             }
             update() {
@@ -140,6 +140,8 @@
             
             document.getElementById('toggleButton').addEventListener('click', toggleDayNight);
 
+            toggleButton.innerHTML = isNight ? 'Day' : 'Night'; 
+
             //the following timeout logic code was implemented using the help of google gemini, 14/10, https://g.co/gemini/share/7aaa5e08aa17
             setTimeout(() => {
                 // Initialize ml5.js Handpose model
@@ -147,7 +149,7 @@
 
                 // Video setup for hand tracking
                 video = createCapture(VIDEO, videoLoaded);
-                video.size(1000, 1000); 
+                video.size(width, height); 
                 video.hide();
             }, 1500); // Increased delay to 1500ms
 
@@ -199,6 +201,8 @@
         // Day and night check
         function toggleDayNight() {
             isNight = !isNight;
+            const button = document.getElementById('toggleButton');
+            button.innerHTML = isNight ? 'Day' : 'Night';
             // Clear all particles and rockets when switching
             rockets = [];
             particles = [];
