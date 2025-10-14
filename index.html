@@ -10,6 +10,25 @@
 </head>
 
 <body>
+  <div id="p5-canvas-container" class="relative">
+<!--     the following loading overlay code was implemented using the help of google gemini, 14/10, https://g.co/gemini/share/7aaa5e08aa17 -->
+    <!-- New Loading Overlay to provide user feedback -->
+    <div id="loadingOverlay" class="absolute inset-0 flex items-center justify-center bg-gray-900/90 z-10 transition-opacity duration-500 rounded-xl hidden">
+        <div class="p-6 bg-white/20 rounded-xl text-white text-center shadow-2xl border border-white/30">
+            <p class="text-lg font-semibold mb-3">Loading Handpose Model...</p>
+            <div class="w-10 h-10 border-4 border-yellow-400 border-t-transparent border-solid rounded-full animate-spin mx-auto"></div>
+        </div>
+    </div>
+    <!-- End Loading Overlay -->
+    
+    <div class="controls p-3 bg-white/10 backdrop-blur-sm rounded-xl shadow-lg border border-white/20">
+        <button id="toggleButton" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold rounded-lg transition shadow-md">
+            Toggle Day/Night
+        </button>
+        <p class="text-sm text-white/80">Pinch your fingers to interact!</p>
+        <p class="text-xs text-white/50">Day: Spawn Bees | Night: Spawn Fireworks</p>
+    </div>
+</div>
 </body>
 
 </html>
