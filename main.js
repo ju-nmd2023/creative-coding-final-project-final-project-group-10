@@ -106,7 +106,7 @@ class Particle {
 
 function drawStar(x, y, radius1, radius2, npoints) {
    let angle = TWO_PI / npoints;
-   let halfAngle = angle / 2.0;
+   let halfAngle = angle / 2;
    beginShape();
    for (let a = 0; a < TWO_PI; a += angle) {
        let sx = x + cos(a) * radius2;
@@ -732,45 +732,6 @@ function draw() {
          image(backgroundLayer, 0, 0);
      }
 
-     //moon
-     push();
-     noStroke();
-     
-     let moonX = width * 0.15; 
-     let moonY = height * 0.15; 
-     let moonSize = 120;
-   
-     //outer glow
-     fill(255, 255, 220, 50); 
-     ellipse(moonX, moonY, moonSize * 1.5);
-   
-     //moon circle
-     fill(255, 255, 220); 
-     ellipse(moonX, moonY, moonSize);
-     
-     //grass
-     fill(25, 40, 45); 
-     rect(0, height * 0.75, width, height * 0.25); 
-     pop();
-
-
-     //agents logic
-     if (field) { 
-       for (let agent of agents) {
-         const x = Math.floor(agent.position.x / fieldSize);
-         const y = Math.floor(agent.position.y / fieldSize);
-        
-         if (x >= 0 && x < field.length && y >= 0 && y < field[0].length) {
-           const desiredDirection = field[x][y];
-           agent.follow(desiredDirection);
-         }
-        
-         agent.update();
-         agent.checkBorders();
-         agent.draw();
-       }
-     }
-
      push();
      fill(2, 5, 30, 4);
      noStroke();
@@ -800,7 +761,6 @@ function draw() {
          }
      }
 
-
      // update/draw rockets
      for (let i = rockets.length - 1; i >= 0; i--) {
          rockets[i].update();
@@ -816,5 +776,44 @@ function draw() {
          p.draw();
          if (p.isDead()) particles.splice(i, 1);
      }
+
+           //moon
+           push();
+           noStroke();
+           
+           let moonX = width * 0.15; 
+           let moonY = height * 0.15; 
+           let moonSize = 120;
+         
+           //outer glow
+           fill(255, 255, 220, 50); 
+           ellipse(moonX, moonY, moonSize * 1.5);
+         
+           //moon circle
+           fill(255, 255, 220); 
+           ellipse(moonX, moonY, moonSize);
+           
+           //grass
+           fill(25, 40, 45); 
+           rect(0, height * 0.75, width, height * 0.25); 
+           pop();
+
+              //agents logic
+     if (field) { 
+      for (let agent of agents) {
+        const x = Math.floor(agent.position.x / fieldSize);
+        const y = Math.floor(agent.position.y / fieldSize);
+       
+        if (x >= 0 && x < field.length && y >= 0 && y < field[0].length) {
+          const desiredDirection = field[x][y];
+          agent.follow(desiredDirection);
+        }
+       
+        agent.update();
+        agent.checkBorders();
+        agent.draw();
+      }
+    }
+
  }
 }
