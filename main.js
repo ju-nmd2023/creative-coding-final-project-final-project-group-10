@@ -25,7 +25,7 @@ let isVideoReady = false;
 
 // grid background variables
 const size = 250;
-const layers = 120;
+const layers = 80;
 const gridCols = 8;
 const gridRows = 4;
 
@@ -217,7 +217,7 @@ class Agent {
 
  draw() {
    push();
-   stroke(255,179,71,85);
+   stroke(230, 179, 76,85);
    strokeWeight(random(1,15))
    line(
      this.lastPosition.x,
@@ -456,10 +456,10 @@ function backgroundSquares() {
 
 
    if (!isNight) {
-       buffer.stroke(120, 140, 150, 180);
+       buffer.stroke(115, 158, 173, 180);
 
    } else {
-       buffer.stroke(22, 25, 50, 80);
+       buffer.stroke(4, 102, 128, 80);
    }
    buffer.strokeWeight(1);
 
@@ -611,7 +611,7 @@ function drawGrass(buffer) {
   buffer.noStroke();
   
 
-  buffer.fill(100, 160, 80); 
+  buffer.fill(79, 141, 82); 
   buffer.rect(0, height * 0.75, width, height * 0.25); 
   buffer.pop();
 }
@@ -626,11 +626,11 @@ function drawSun(buffer) {
   let sunSize = 100;
 
   // outer glow
-  buffer.fill(255, 200, 0, 80); 
+  buffer.fill(257, 168, 76, 80); 
   buffer.ellipse(sunX, sunY, sunSize * 2);
 
   // sun circle
-  buffer.fill(255, 220, 0);
+  buffer.fill(253, 217, 81);
   buffer.ellipse(sunX, sunY, sunSize);
   buffer.pop();
 }
@@ -641,7 +641,7 @@ function draw() {
      //-------DAY------
     
      //clear canvas background 
-     background(200, 198, 197);
+     background(137, 195, 207);
     
      //draw background grid layer
      if (backgroundLayer) {
@@ -725,7 +725,7 @@ function draw() {
      //------- NIGHT---------
     
      //clear canvas background 
-     background(2, 5, 30);
+     background(1, 66, 88);
  
      //draw background grid layer
      if (backgroundLayer) {
