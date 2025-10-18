@@ -18,7 +18,7 @@ let isNight = false;
 let backgroundLayer;
 
 
-// Flags to ensure the model only starts detection when both model and video are loaded
+// model detection 
 let isModelLoaded = false;
 let isVideoReady = false;
 
@@ -33,8 +33,6 @@ const gridRows = 4;
 // bee variables
 let beeLayer;
 let bees = [];
-
-
 const beeSize = 20;
 const beeLayers = 8;
 const beeSpeed = 0.02;
@@ -48,7 +46,7 @@ let flowerAmount = 10;
 let flowerGap;
 
 
-//fog variables
+//firefly variables
 const fieldSize = 50;
 const divider = 10;
 let field;
@@ -58,18 +56,13 @@ let agents = [];
 //synth
 let synth = null;
 let buzzSynth = null;
-
-
-let notes = ["C4","C4","G4","G4","A4","A4","G4", "F4","F4","E4","E4","D4","D4","C4"];
+let notes = ["C4","C4","G4","G4","A4","A4","G4", "0","F4","F4","E4","E4","D4","D4","C4", "0"];
 let noteIndex = 0;
 let previousNote = -1;
-
-
 let isPinching = false;
 let audioStarted = false;
+
 //---------CLASSES--------
-
-
 class Particle {
    constructor(x, y) {
        this.position = createVector(x, y);
@@ -94,12 +87,12 @@ class Particle {
 
 
        // inner glow
-       fill(255, 220, 80, 40);
+       fill(255, 255, 255, 40);
        drawStar(0, 0, this.size * 1.5, this.size * 3.5, this.points);
 
 
        // main star
-       fill(255, 240, 120, 180);
+       fill(255, 255, 255, 180);
        drawStar(0, 0, this.size / 2, this.size, this.points);
 
 
@@ -149,9 +142,9 @@ class Rocket {
    }
    draw() {
        noStroke();
-       fill(255, 200, 120, 120);
+       fill(255, 240, 200, 120);
        ellipse(this.pos.x, this.pos.y, 6);
-       stroke(255, 180, 100, 100);
+       stroke(255, 220, 180, 100);
        noFill();
        beginShape();
        for (let p of this.trail) vertex(p.x, p.y);
@@ -167,7 +160,7 @@ class Rocket {
 }
 
 
-//fog
+//firefly
 class Agent {
  constructor(x, y, maxSpeed, maxForce) {
    this.position = createVector(x, y);
@@ -236,10 +229,7 @@ class Agent {
  }
 }
 
-
 function setup() {
-
-
    const canvas = createCanvas(windowWidth, windowHeight);
    canvas.parent('p5-canvas-container');
    frameRate(40);
@@ -248,13 +238,10 @@ function setup() {
    document.getElementById('loadingOverlay').classList.remove('hidden');
 
 
-   // Initialize the separate graphics layers
+   //separate graphics layers start
    backgroundLayer = createGraphics(width, height);
    flowerLayer = createGraphics(width,height);
    beeLayer = createGraphics(width, height);
-
-
-   // flowerLayer = createGraphics(width, height); // Removed
   
    const toggleButton = document.getElementById('toggleButton');
    if (toggleButton) {
@@ -265,37 +252,34 @@ function setup() {
           await toggleDayNight();
         } catch (error) {
           console.error("Error during mode toggle:", error);
-          // You could add an alert here if the error is critical
         }
      });
       
        toggleButton.innerHTML = isNight ? 'Day' : 'Night';
    }
 
-
+  //timeout logic was made by help of google gemini, 14/10, https://g.co/gemini/share/7aaa5e08aa17  
    setTimeout(() => {
-       // Initialize ml5.js Handpose model
+       //ml5 start
        handpose = ml5.handPose(modelLoaded);
-
-
-       // Video setup for hand tracking
+      
        video = createCapture(VIDEO, videoLoaded);
        video.size(width, height);
        video.hide();
-   }, 1500); // Increased delay to 1500ms
+   }, 1500); 
 
 
-   // Draw the initial background grid ONCE
+   // draw background grid ONCE
    backgroundSquares();
 
 
    flowerGap = 200;
 }
 
-
+//window resize logic was made by help of google gemini, 14/10, https://g.co/gemini/share/7aaa5e08aa17  
 function windowResized() {
    resizeCanvas(windowWidth, windowHeight);
-   // Re-initialize and redraw the graphics buffers on resize
+   //redraw graphics buffers on resize
    backgroundLayer = createGraphics(width, height);
    flowerLayer = createGraphics(width,height);
    beeLayer = createGraphics(width, height);
@@ -330,19 +314,19 @@ function startDetection() {
    }
 }
 
-
+//window two functions were made by help of google gemini, 14/10, https://g.co/gemini/share/7aaa5e08aa17  
 // model and video callbacks
 function videoLoaded() {
    console.log("Video loaded, setting flag.");
    isVideoReady = true;
-   startDetection();    // Check if we can start detection
+   startDetection(); 
 }
 
 
 function modelLoaded() {
    console.log("Handpose Model Loaded!");
-   isModelLoaded = true; // Model is ready
-   startDetection();    // Check if we can start detection
+   isModelLoaded = true; 
+   startDetection(); 
 }
 
 
@@ -371,15 +355,11 @@ async function ensureAudioReady(){
 
 
    if (!buzzSynth) {
-     buzzSynth = new Tone.NoiseSynth({
-       noise: { type: "pink" },
-       envelope: { attack: 0.001, decay: 0.1, sustain: 0.05, release: 0.1 }
+     buzzSynth = new Tone.Synth({
+       noise: { type: "sine" },
+       envelope: { attack: 0.005, decay: 0.1, sustain: 0.8, release: 0.2 }
      }).toDestination();
    }
-
-
-
-
    audioStarted = true;
    console.log("Tone.js Audio Context Started.");
    return true;
@@ -392,40 +372,24 @@ async function ensureAudioReady(){
 
 
 
-// Day and night check
+// day and night check
 async function toggleDayNight() {
- // Try to enable audio, but do NOT block visuals if it fails
- await ensureAudioReady(); // returns boolean, but we ignore the result for visuals
-
-
-
+ await ensureAudioReady(); 
 
  isNight = !isNight;
 
-
-
-
  const button = document.getElementById('toggleButton');
  if (button) button.innerHTML = isNight ? 'Day' : 'Night';
-
-
-
 
  rockets = [];
  particles = [];
  bees = [];
  flowers = [];
 
-
-
-
- // stop any ongoing sounds safely
+ // stop any ongoing sounds 
  if (synth) synth.triggerRelease();
  if (buzzSynth) buzzSynth.triggerRelease();
  isPinching = false;
-
-
-
 
  if (isNight) {
    field = generateField();
@@ -435,9 +399,6 @@ async function toggleDayNight() {
    field = null;
    agents = [];
  }
-
-
-
 
  backgroundSquares();
 }
@@ -496,6 +457,7 @@ function backgroundSquares() {
 
    if (!isNight) {
        buffer.stroke(120, 140, 150, 180);
+
    } else {
        buffer.stroke(22, 25, 50, 80);
    }
@@ -514,7 +476,8 @@ function backgroundSquares() {
            const centerY = startY + y * size + size / 2;
            drawLayers(buffer, centerX, centerY, size, layers, isNight);
        }
-   }
+      }
+
    buffer.pop();
 }
 
@@ -553,19 +516,18 @@ function flower(buffer){
 function drawFlowerLayer(){
  const buffer = flowerLayer;
  if (!buffer)return;
-
-
  buffer.clear();
 
+ buffer.push();
+ drawSun(buffer);
+ drawGrass(buffer);
+ buffer.pop();
 
  const totalRowWidth = flowerAmount * flowerSize + flowerGap * (flowerAmount - 1);
 
-
  let x = (width - totalRowWidth) /2;
 
-
  const rowY = height * 0.75;
-
 
  for (let j = 0; j< flowerAmount; j++){
    buffer.push();
@@ -573,11 +535,8 @@ function drawFlowerLayer(){
    flower(buffer);
    buffer.pop();
 
-
    x += flowerSize + flowerGap;
  }
-
-
 }
 
 
@@ -594,14 +553,11 @@ function drawBeeShape(buffer, x, y, beeSize, beeLayers) {
        const s = (beeSize / beeLayers) * i;
        const half = s / 2;
 
-
-       // Black and yellow stripes
        if (i % 2 === 0) {
            buffer.stroke(0);
        } else {
            buffer.stroke(255, 255, 0);
        }
-
 
        buffer.beginShape();
        for (let j = 0; j < 10; j++) {
@@ -609,7 +565,6 @@ function drawBeeShape(buffer, x, y, beeSize, beeLayers) {
            let radius = random(half - variance, half);
            let xOffset = cos(angle) * radius;
            let yOffset = sin(angle) * radius;
-
 
            buffer.vertex(x + xOffset, y + yOffset);
        }
@@ -650,34 +605,59 @@ function generateAgents() {
  }
 }
 
+//drawing vectors
+function drawGrass(buffer) {
+  buffer.push();
+  buffer.noStroke();
+  
 
-// Main animation loop
-// Main animation loop
+  buffer.fill(100, 160, 80); 
+  buffer.rect(0, height * 0.75, width, height * 0.25); 
+  buffer.pop();
+}
+
+//sun
+function drawSun(buffer) {
+  buffer.push();
+  buffer.noStroke();
+  
+  let sunX = width * 0.15;
+  let sunY = height * 0.15; 
+  let sunSize = 100;
+
+  // outer glow
+  buffer.fill(255, 200, 0, 80); 
+  buffer.ellipse(sunX, sunY, sunSize * 2);
+
+  // sun circle
+  buffer.fill(255, 220, 0);
+  buffer.ellipse(sunX, sunY, sunSize);
+  buffer.pop();
+}
+
+//--------DRAWWWWW----------
 function draw() {
  if (!isNight) {
      //-------DAY------
     
-     //Clear main canvas background (Day Color)
-     background(164, 188, 197);
+     //clear canvas background 
+     background(200, 198, 197);
     
-     //Draw background grid layer
+     //draw background grid layer
      if (backgroundLayer) {
          image(backgroundLayer, 0, 0);
      }
-
 
      drawFlowerLayer();
      if(flowerLayer){
        image(flowerLayer, 0, 0);
      }
  
-
-
-     //clear bee layer every frame
      if (beeLayer) {
          beeLayer.clear();
      }
     
+     //pinch logic made with using p5js.org, 16/10, https://editor.p5js.org/MOQN/sketches/DFRIUSvFC
      //pinch to beeeeees
      if (predictions.length > 0) {
          const hand = predictions[0];
@@ -691,7 +671,7 @@ function draw() {
              if (pinchDistance < PINCH_THRESHOLD_BEE) {
                //buzzing sound initialised
                if (!isPinching && audioStarted && buzzSynth) {
-                 buzzSynth.triggerAttack();
+                 buzzSynth.triggerAttack("C3");
                  isPinching = true;
                  }
 
@@ -744,7 +724,7 @@ function draw() {
  else {
      //------- NIGHT---------
     
-     // clear main canvas background (Night Color)
+     //clear canvas background 
      background(2, 5, 30);
  
      //draw background grid layer
@@ -752,9 +732,30 @@ function draw() {
          image(backgroundLayer, 0, 0);
      }
 
+     //moon
+     push();
+     noStroke();
+     
+     let moonX = width * 0.15; 
+     let moonY = height * 0.15; 
+     let moonSize = 120;
+   
+     //outer glow
+     fill(255, 255, 220, 50); 
+     ellipse(moonX, moonY, moonSize * 1.5);
+   
+     //moon circle
+     fill(255, 255, 220); 
+     ellipse(moonX, moonY, moonSize);
+     
+     //grass
+     fill(25, 40, 45); 
+     rect(0, height * 0.75, width, height * 0.25); 
+     pop();
+
 
      //agents logic
-     if (field) { // Check that field exists
+     if (field) { 
        for (let agent of agents) {
          const x = Math.floor(agent.position.x / fieldSize);
          const y = Math.floor(agent.position.y / fieldSize);
@@ -770,17 +771,13 @@ function draw() {
        }
      }
 
-
      push();
      fill(2, 5, 30, 4);
      noStroke();
      rect(0, 0, width, height);
      pop();
 
-
-
-
-     // Pinch rockets firework stars
+     // pinch rockets firework stars
      if (predictions.length > 0) {
          const hand = predictions[0];
          const fingerTip = hand.keypoints.find(kp => kp.name === "index_finger_tip");
@@ -804,7 +801,7 @@ function draw() {
      }
 
 
-     // Update/draw rockets
+     // update/draw rockets
      for (let i = rockets.length - 1; i >= 0; i--) {
          rockets[i].update();
          rockets[i].draw();
@@ -812,7 +809,7 @@ function draw() {
      }
 
 
-     // Update/draw particles
+     // update/draw particles
      for (let i = particles.length - 1; i >= 0; i--) {
          const p = particles[i];
          p.update();
