@@ -783,11 +783,11 @@ function draw() {
            
            let moonX = width * 0.15; 
            let moonY = height * 0.15; 
-           let moonSize = 120;
+           let moonSize = 140;
          
            //outer glow
            fill(255, 255, 220, 50); 
-           ellipse(moonX, moonY, moonSize * 1.5);
+           ellipse(moonX, moonY, moonSize * 1.3);
          
            //moon circle
            fill(255, 255, 220); 
