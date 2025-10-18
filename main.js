@@ -103,7 +103,7 @@ class Particle {
    }
 }
 
-
+//draw star was implimented using help og p5js.org, 11/10, https://archive.p5js.org/examples/form-star.html
 function drawStar(x, y, radius1, radius2, npoints) {
    let angle = TWO_PI / npoints;
    let halfAngle = angle / 2;
