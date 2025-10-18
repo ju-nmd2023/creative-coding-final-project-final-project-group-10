@@ -621,8 +621,9 @@ function drawSun(buffer) {
   buffer.push();
   buffer.noStroke();
   
-  let sunX = width * 0.15;
   let sunY = height * 0.15; 
+  let sunX = width * 0.15;
+
   let sunSize = 100;
 
   // outer glow
